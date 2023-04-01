@@ -9,6 +9,8 @@ tube_diameter = 10.0;
 tight_fit = 0.2;
 loose_fit = 0.4;
 
+epsilon = 0.01;
+
 module tube(inner_diameter, outer_diameter, length){
     linear_extrude(length){
         difference(){
@@ -21,13 +23,10 @@ module tube(inner_diameter, outer_diameter, length){
 
 
 module base(inner_diameter, outer_diameter, thickness) {
-    difference(){
-        linear_extrude(thickness) {
-            circle(d = outer_diameter);
-        }
-        linear_extrude(thickness + 1, center = true) {
-            circle(d = inner_diameter);
-        }
+    difference() {
+        cylinder(d = outer_diameter, h = thickness);
+        translate([0, 0, -epsilon])
+        cylinder(d = inner_diameter, h = thickness + epsilon * 2);
     }
 }
 
@@ -41,8 +40,11 @@ module half_coil(coil_length, coil_height) {
     base_diameter = coil_diameter + coil_height;
     length = coil_length / 2;
     
-    base(coil_diameter, base_diameter, nozzle_diameter);    
+    base_thickness = 2;
+    base(coil_diameter, base_diameter, 1);
     tube(coil_diameter, coil_diameter + nozzle_diameter, length);
 }
 
-half_coil(50, 5.513);
+half_coil(50, 9);
+//half_coil(30, 5.513);
+//half_coil(15, 8.820);
